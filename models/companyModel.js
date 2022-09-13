@@ -9,6 +9,9 @@ const companySchema = new Schema ({
         type : Schema.Types.ObjectId,
         ref : 'User'
     },
+    images : {
+        type : Array
+    },
     phoneNumber : {
         type : String,
         minlength : 10,

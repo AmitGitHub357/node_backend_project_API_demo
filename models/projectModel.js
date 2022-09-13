@@ -16,6 +16,9 @@ const ProjectSchema = new Schema ({
         type : Schema.Types.ObjectId,
         ref : 'Company'
     },
+    images : {
+        type : Array
+    },
     projectStatus : {
         enum : ['Completed','Ongoing','Upcoming'],
         type : String,

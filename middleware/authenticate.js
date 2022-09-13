@@ -26,7 +26,23 @@ const authenticate = (req, res, next) => {
         error: err.message,
       });
     });
-};
+    
 
-module.exports = { authenticate };
+  };
+
+  const checkIfAdmin=  (req,res,next) => {
+    if(req.user.isAdmin){
+        return next()
+   }
+   else{
+       return res.send({
+           message : 'Unauthorized',
+           success : false,
+           status : 401
+        })
+   }
+
+}
+
+module.exports = { authenticate ,checkIfAdmin};
 

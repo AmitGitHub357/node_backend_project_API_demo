@@ -92,23 +92,43 @@ const updateCompany = asyncHandler(async (req, resp) => {
 });
 
 const addCompany = asyncHandler(async(req,res)=>{
-    try {
-        const body = req.body
-        const newCompany = new Company(body)
-        const saveCompany = await newCompany.save()
-        res.send({
-            message : 'Company saved successfully',
-            success : true,
-            status : 201
-        })
-    } catch (error) {
-        res.send({
-            message : 'Something went wrong,please try again',
-            success : false,
-            error : error.message,
-            status : 400
-        })
+const body = req.body,
+    file = req.files,
+    id = req.user._id;
+  try {
+    let imagesFile = []
+    let imagesPath = []
+      
+    if (Object.keys(req.files).length != 0) {
+      if (Object.keys(file).includes("images")) {
+        imagesFile = file.images;
+      }
     }
+    if (imagesFile.length != 0) {
+      for (let i = 0; i < imagesFile.length; i++) {
+        let imgObj =
+          imagesFile[i].destination.slice(1) + imagesFile[i].filename;
+        imagesPath.push(imgObj);
+      }
+      body.images = imagesPath;
+    }
+    
+    const newCompany = new Company(body);
+    const saveCompany = await newCompany.save();
+    res.send({
+      message: "Company saved successfully",
+      success: true,
+      status: 200,
+    });
+  } catch (error) {
+    console.log(error);
+    res.send({
+      message: "Something went wrong,please try again",
+      success: false,
+      error: error.message,
+      status: 400,
+    });
+  }
 })
 
 module.exports = {

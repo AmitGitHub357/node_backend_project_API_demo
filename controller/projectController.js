@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("multer");
+const path = require("path");
 const app = express();
 const mongoose = require("mongoose");
 const Project = require("../models/ProjectModel");
@@ -9,7 +11,9 @@ const asyncHandler = require("express-async-handler");
 const getProjectById = asyncHandler(async (req, resp) => {
   try {
     const id = req.params.id;
-    const ProjectList = await Project.findById(id).sort('-id').populate('companyId');
+    const ProjectList = await Project.findById(id)
+      .sort("-id")
+      .populate("companyId");
     if (ProjectList) {
       resp.send({
         status: 200,
@@ -24,46 +28,28 @@ const getProjectById = asyncHandler(async (req, resp) => {
   }
 });
 
-// const getProjectByCompanyName = asyncHandler (async(req,resp) => 
-// {
-//   const companyName = req.query.name
-//   const projectList = await Project.find({ companyName }).populate('companyId')
-  // resp.send({
-  //   projectList
-  // })
-// })
-
 const getProjectByCompanyName = asyncHandler(async (req, resp) => {
-const companyName = req.query.name
+  const companyName = req.query.name;
 
-var updatedProjectsList = []
-try {
-  const projectList = await Project.find({ companyName }).populate('companyId')
-
-  // for(let i = 0;i < projectList.length; i++)
-  // {
-  //     if(projectList[i].companyId.companyName === companyName)
-  //     {
-  //       updatedProjectsList.push(projectList[i])
-  //     }
-  // }
-  
-  resp.send({
-    projectList,
-    success : true,
-      status : 200
-  })
-
-} catch (error) 
-{
-  resp.send({
-      message : 'Something went wrong,please try again',
-      success : false,
-      error : error.message,
-      status : 400
-  })
-}
-})
+  var updatedProjectsList = [];
+  try {
+    const projectList = await Project.find({ companyName }).populate(
+      "companyId"
+    );
+    resp.send({
+      projectList,
+      success: true,
+      status: 200,
+    });
+  } catch (error) {
+    resp.send({
+      message: "Something went wrong,please try again",
+      success: false,
+      error: error.message,
+      status: 400,
+    });
+  }
+});
 
 const getProject = asyncHandler(async (req, resp) => {
   try {
@@ -133,16 +119,38 @@ const updateProject = asyncHandler(async (req, resp) => {
 });
 
 const addProject = asyncHandler(async (req, res) => {
+
+  const body = req.body,
+    file = req.files,
+    id = req.user._id;
   try {
-    const body = req.body;
+    let imagesFile = []
+    let imagesPath = []
+      previewImagePath = "";
+    if (Object.keys(req.files).length != 0) {
+      //         console.log(req.files)
+      if (Object.keys(file).includes("images")) {
+        imagesFile = file.images;
+      }
+    }
+    if (imagesFile.length != 0) {
+      for (let i = 0; i < imagesFile.length; i++) {
+        let imgObj =
+          imagesFile[i].destination.slice(1) + imagesFile[i].filename;
+        imagesPath.push(imgObj);
+      }
+      body.images = imagesPath;
+    }
+    
     const newProject = new Project(body);
     const saveProject = await newProject.save();
     res.send({
       message: "Project saved successfully",
       success: true,
-      status: 201,
+      status: 200,
     });
   } catch (error) {
+    console.log(error);
     res.send({
       message: "Something went wrong,please try again",
       success: false,
@@ -158,6 +166,6 @@ module.exports = {
   deleteProject,
   updateProject,
   addProject,
-  getProjectByCompanyName
+  getProjectByCompanyName,
   // getProjectByCompanyName,
 };
