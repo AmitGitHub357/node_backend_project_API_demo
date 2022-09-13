@@ -21,7 +21,7 @@ router.get("/", getCompany,checkIfAdmin)
 router.get("/:id",authenticate,checkIfAdmin, getCompanyById)
 router.delete("/:id",authenticate,checkIfAdmin, deleteCompany)
 router.put("/:id",authenticate,checkIfAdmin, updateCompany)
-router.route('/add').post(authenticate,upload.fields([{ name: "images", maxCount: 4 }]),addCompany)
+router.route('/add').post(authenticate,checkIfAdmin,upload.fields([{ name: "images", maxCount: 4 }]),addCompany)
 
 module.exports = router
 
