@@ -126,7 +126,7 @@ const addProject = asyncHandler(async (req, res) => {
   try {
     let imagesFile = []
     let imagesPath = []
-      previewImagePath = "";
+      
     if (Object.keys(req.files).length != 0) {
       //         console.log(req.files)
       if (Object.keys(file).includes("images")) {
